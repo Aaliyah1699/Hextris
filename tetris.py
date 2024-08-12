@@ -66,7 +66,7 @@ while not game_over:
     screen.fill((0, 0, 0))
     # Grid
     draw_grid()  # Passing in (cols, rows, grid_size, x_gap, y_gap)
-    draw_block()  # Display block
+    draw_block()  # Display blocks
     pygame.display.update()
 
 pygame.quit()
