@@ -18,6 +18,28 @@ blocks = [
 ]
 
 
+class Block:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.type = 2
+        self.rotation = 1
+
+    def shape(self):
+        return blocks[self.type][self.rotation]
+
+
+def draw_block():
+    for y in range(3):
+        for x in range(3):
+            if y * 3 + x in block.shape():
+                pygame.draw.rect(screen, (255, 255, 255),
+                                 [(x + block.x) * grid_size + x_gap + 1,
+                                  (y + block.y) * grid_size + y_gap + 1,
+                                  grid_size - 2, grid_size - 2])
+
+
 # Grid
 def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
     # Create grid and place on screen
@@ -34,6 +56,8 @@ rows = screen.get_height() // grid_size
 x_gap = (screen.get_width() - cols * grid_size) // 2
 y_gap = (screen.get_height() - rows * grid_size) // 2
 
+block = Block(5, 6)
+
 while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -42,7 +66,7 @@ while not game_over:
     screen.fill((0, 0, 0))
     # Grid
     draw_grid()  # Passing in (cols, rows, grid_size, x_gap, y_gap)
-
+    draw_block()  # Display block
     pygame.display.update()
 
 pygame.quit()
