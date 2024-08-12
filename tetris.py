@@ -5,6 +5,8 @@ pygame.init()
 screen = pygame.display.set_mode((600, 600))  # Screen size
 pygame.display.set_caption('Hextris')
 game_over = False
+clock = pygame.time.Clock()
+fps = 10  # frames per second
 
 # Blocks shape
 blocks = [
@@ -23,8 +25,8 @@ class Block:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.type = 2
-        self.rotation = 1
+        self.type = 5
+        self.rotation = 3
 
     def shape(self):
         return blocks[self.type][self.rotation]
@@ -49,6 +51,18 @@ def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
                              [x * grid_size + x_gap, y * grid_size + y_gap, grid_size, grid_size], 1)
 
 
+def drop_block():
+    can_drop = True
+
+    for y in range(3):
+        for x in range(3):
+            if y * 3 + x in block.shape():
+                if block.y + y >= rows - 1:
+                    can_drop = False
+    if can_drop:
+        block.y += 1
+
+
 # Have grid spread over screen size
 grid_size = 30
 cols = screen.get_width() // grid_size
@@ -59,6 +73,7 @@ y_gap = (screen.get_height() - rows * grid_size) // 2
 block = Block(5, 6)
 
 while not game_over:
+    clock.tick(fps)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
@@ -67,6 +82,7 @@ while not game_over:
     # Grid
     draw_grid()  # Passing in (cols, rows, grid_size, x_gap, y_gap)
     draw_block()  # Display blocks
+    drop_block()
     pygame.display.update()
 
 pygame.quit()
