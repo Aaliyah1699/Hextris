@@ -43,12 +43,29 @@ def draw_block():
                                   grid_size - 2, grid_size - 2])
 
 
+def collides(nx, ny):
+    collision = False
+    for y in range(3):
+        for x in range(3):
+            if y * 3 + x in block.shape():
+                if x + block.x + nx < 0 or x + block.x + nx > cols - 1:
+                    collision = True
+                    break
+                if y + block.y + ny < 0 or y + block.y + ny > rows - 1:
+                    collision = True
+                    break
+                if game_board[x + block.x + nx][y + block.y + ny] != (0, 0, 0):
+                    collision = True
+                    break
+    return collision
+
+
 def drop_block():
     can_drop = True
     for y in range(3):
         for x in range(3):
             if y * 3 + x in block.shape():
-                if block.y + y >= rows - 1:
+                if collides(0, 1):
                     can_drop = False
     if can_drop:
         block.y += 1
@@ -65,9 +82,7 @@ def side_move(dx):
     for y in range(3):
         for x in range(3):
             if y * 3 + x in block.shape():
-                if x + block.x >= cols - 1 and dx == 1:
-                    can_move = False
-                elif x + block.x < 1 and dx == -1:
+                if collides(dx, 0):
                     can_move = False
     if can_move:
         block.x += dx
@@ -82,10 +97,7 @@ def rotate():
     for y in range(3):
         for x in range(3):
             if y * 3 + x in block.shape():
-                if block.y + y >= rows - 1 or \
-                        x + block.x >= cols - 1 or \
-                        x + block.x < 1 or \
-                        block.y + y < 0:
+                if collides(0, 0):
                     can_rotate = False
     if not can_rotate:
         block.rotation = last_rotation
