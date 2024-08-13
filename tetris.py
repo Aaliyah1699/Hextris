@@ -7,7 +7,7 @@ screen = pygame.display.set_mode((600, 600))  # Screen size
 pygame.display.set_caption('Hextris')
 game_over = False
 clock = pygame.time.Clock()
-fps = 5  # frames per second
+fps = 4  # frames per second
 
 # Blocks shape
 blocks = [
@@ -75,6 +75,22 @@ def side_move(dx):
         drop_block()
 
 
+def rotate():
+    last_rotation = block.rotation
+    block.rotation = (block.rotation + 1) % len((blocks[block.type]))
+    can_rotate = True
+    for y in range(3):
+        for x in range(3):
+            if y * 3 + x in block.shape():
+                if block.y + y >= rows - 1 or \
+                        x + block.x >= cols - 1 or \
+                        x + block.x < 1 or \
+                        block.y + y < 0:
+                    can_rotate = False
+    if not can_rotate:
+        block.rotation = last_rotation
+
+
 # Grid
 def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
     # Create grid and place on screen
@@ -111,6 +127,9 @@ while not game_over:
         if event.type == pygame.QUIT:
             game_over = True
             continue
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                rotate()
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_LEFT:
             side_move(-1)
