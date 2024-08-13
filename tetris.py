@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -6,7 +7,7 @@ screen = pygame.display.set_mode((600, 600))  # Screen size
 pygame.display.set_caption('Hextris')
 game_over = False
 clock = pygame.time.Clock()
-fps = 4  # frames per second
+fps = 5  # frames per second
 
 # Blocks shape
 blocks = [
@@ -25,7 +26,7 @@ class Block:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.type = 0
+        self.type = random.randint(0, 6)
         self.rotation = 0
 
     def shape(self):
@@ -70,6 +71,8 @@ def side_move(dx):
                     can_move = False
     if can_move:
         block.x += dx
+    else:
+        drop_block()
 
 
 # Grid
@@ -92,7 +95,7 @@ rows = screen.get_height() // grid_size
 x_gap = (screen.get_width() - cols * grid_size) // 2
 y_gap = (screen.get_height() - rows * grid_size) // 2
 
-block = Block(3, 3)
+block = Block((cols - 1) // 2, 0)
 
 # Game Board (initialize)
 game_board = []
@@ -121,7 +124,7 @@ while not game_over:
         draw_block()  # Display blocks
         if event.type != pygame.KEYDOWN:
             if not drop_block():
-                block = None
+                block = Block(random.randint(5, cols - 5), 0)  # Randomize block placement
     pygame.display.update()
 
 pygame.quit()
