@@ -6,7 +6,7 @@ screen = pygame.display.set_mode((600, 600))  # Screen size
 pygame.display.set_caption('Hextris')
 game_over = False
 clock = pygame.time.Clock()
-fps = 3  # frames per second
+fps = 4  # frames per second
 
 # Blocks shape
 blocks = [
@@ -51,6 +51,12 @@ def drop_block():
                     can_drop = False
     if can_drop:
         block.y += 1
+    else:
+        for y in range(3):
+            for x in range(3):
+                if y * 3 + x in block.shape():
+                    game_board[x + block.x][y + block.y] = (9, 255, 0)
+    return can_drop
 
 
 def side_move(dx):
@@ -73,6 +79,10 @@ def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
         for x in range(cols):
             pygame.draw.rect(screen, (100, 100, 100),
                              [x * grid_size + x_gap, y * grid_size + y_gap, grid_size, grid_size], 1)
+            # Draw blocks on top of grid
+            if game_board[x][y] != (0, 0, 0):
+                pygame.draw.rect(screen, game_board[x][y],
+                                 [x * grid_size + x_gap, y * grid_size + y_gap + 1, grid_size - 1, grid_size - 1])
 
 
 # Have grid spread over screen size
@@ -84,11 +94,20 @@ y_gap = (screen.get_height() - rows * grid_size) // 2
 
 block = Block(3, 3)
 
+# Game Board (initialize)
+game_board = []
+for i in range(cols):
+    new_col = []
+    for j in range(rows):
+        new_col.append((0, 0, 0))
+    game_board.append(new_col)
+
 while not game_over:
     clock.tick(fps)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
+            continue
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_LEFT:
             side_move(-1)
@@ -98,9 +117,11 @@ while not game_over:
     screen.fill((0, 0, 0))
     # Functions
     draw_grid()  # Passing in (cols, rows, grid_size, x_gap, y_gap)
-    draw_block()  # Display blocks
-    if event.type != pygame.KEYDOWN:
-        drop_block()
+    if block is not None:
+        draw_block()  # Display blocks
+        if event.type != pygame.KEYDOWN:
+            if not drop_block():
+                block = None
     pygame.display.update()
 
 pygame.quit()
