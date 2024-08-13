@@ -6,7 +6,7 @@ screen = pygame.display.set_mode((600, 600))  # Screen size
 pygame.display.set_caption('Hextris')
 game_over = False
 clock = pygame.time.Clock()
-fps = 10  # frames per second
+fps = 3  # frames per second
 
 # Blocks shape
 blocks = [
@@ -25,8 +25,8 @@ class Block:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.type = 5
-        self.rotation = 3
+        self.type = 0
+        self.rotation = 0
 
     def shape(self):
         return blocks[self.type][self.rotation]
@@ -42,18 +42,8 @@ def draw_block():
                                   grid_size - 2, grid_size - 2])
 
 
-# Grid
-def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
-    # Create grid and place on screen
-    for y in range(rows):
-        for x in range(cols):
-            pygame.draw.rect(screen, (100, 100, 100),
-                             [x * grid_size + x_gap, y * grid_size + y_gap, grid_size, grid_size], 1)
-
-
 def drop_block():
     can_drop = True
-
     for y in range(3):
         for x in range(3):
             if y * 3 + x in block.shape():
@@ -63,6 +53,28 @@ def drop_block():
         block.y += 1
 
 
+def side_move(dx):
+    can_move = True
+    for y in range(3):
+        for x in range(3):
+            if y * 3 + x in block.shape():
+                if x + block.x >= cols - 1 and dx == 1:
+                    can_move = False
+                elif x + block.x < 1 and dx == -1:
+                    can_move = False
+    if can_move:
+        block.x += dx
+
+
+# Grid
+def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
+    # Create grid and place on screen
+    for y in range(rows):
+        for x in range(cols):
+            pygame.draw.rect(screen, (100, 100, 100),
+                             [x * grid_size + x_gap, y * grid_size + y_gap, grid_size, grid_size], 1)
+
+
 # Have grid spread over screen size
 grid_size = 30
 cols = screen.get_width() // grid_size
@@ -70,19 +82,25 @@ rows = screen.get_height() // grid_size
 x_gap = (screen.get_width() - cols * grid_size) // 2
 y_gap = (screen.get_height() - rows * grid_size) // 2
 
-block = Block(5, 6)
+block = Block(3, 3)
 
 while not game_over:
     clock.tick(fps)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+            side_move(-1)
+        if event.key == pygame.K_RIGHT:
+            side_move(1)
 
     screen.fill((0, 0, 0))
-    # Grid
+    # Functions
     draw_grid()  # Passing in (cols, rows, grid_size, x_gap, y_gap)
     draw_block()  # Display blocks
-    drop_block()
+    if event.type != pygame.KEYDOWN:
+        drop_block()
     pygame.display.update()
 
 pygame.quit()
