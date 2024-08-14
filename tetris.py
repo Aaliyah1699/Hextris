@@ -161,8 +161,13 @@ for i in range(cols):
     game_board.append(new_col)
 
 score = 0
-font = pygame.font.SysFont('Papyrus', 25, True, False)
+font = pygame.font.SysFont('Papyrus', 25, True, False)  # Score font
+font2 = pygame.font.SysFont('Zapfino', 40, True, False)  # Game over font
+finished_text = font2.render('Game Over', True, (255, 255, 255))
+ft_pos = (
+    (screen.get_width() - finished_text.get_width()) // 2, (screen.get_height() - finished_text.get_height()) // 2)
 
+game_finished = False
 while not game_over:
     clock.tick(fps)
     for event in pygame.event.get():
@@ -184,11 +189,15 @@ while not game_over:
     if block is not None:
         draw_block()  # Display blocks
         if event.type != pygame.KEYDOWN:
-            if not drop_block():
+            if not drop_block() and not game_finished:
                 score += find_lines()
                 block = Block(random.randint(5, cols - 5), 0)  # Randomize block placement
+                if collides(0, 0):
+                    game_finished = True
     text = font.render('Score: ' + str(score), True, (255, 255, 255))
     screen.blit(text, [0, 0])
+    if game_finished:
+        screen.blit(finished_text, ft_pos)
     pygame.display.update()
 
 pygame.quit()
