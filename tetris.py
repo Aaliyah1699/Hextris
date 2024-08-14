@@ -161,6 +161,7 @@ for i in range(cols):
     game_board.append(new_col)
 
 score = 0
+font = pygame.font.SysFont('Papyrus', 25, True, False)
 
 while not game_over:
     clock.tick(fps)
@@ -186,6 +187,8 @@ while not game_over:
             if not drop_block():
                 score += find_lines()
                 block = Block(random.randint(5, cols - 5), 0)  # Randomize block placement
+    text = font.render('Score: ' + str(score), True, (255, 255, 255))
+    screen.blit(text, [0, 0])
     pygame.display.update()
 
 pygame.quit()
