@@ -3,11 +3,11 @@ import random
 
 pygame.init()
 
-screen = pygame.display.set_mode((600, 600))  # Screen size
+screen = pygame.display.set_mode((400, 400))  # Screen size
 pygame.display.set_caption('Hextris')
 game_over = False
 clock = pygame.time.Clock()
-fps = 6  # frames per second
+fps = 4  # frames per second
 
 # Blocks shape
 blocks = [
@@ -127,6 +127,22 @@ def draw_grid():  # Passing in (cols, rows, grid_size, x_gap, y_gap)
                                  [x * grid_size + x_gap, y * grid_size + y_gap + 1, grid_size - 1, grid_size - 1])
 
 
+# Clear lines across grid
+def find_lines():
+    lines = 0
+    for y in range(rows):
+        empty = 0
+        for x in range(cols):
+            if game_board[x][y] == (0, 0, 0):
+                empty += 1
+        if empty == 0:
+            lines += 1
+            for y2 in range(y, 1, -1):
+                for x2 in range(cols):
+                    game_board[x2][y2] = game_board[x2][y2 - 1]
+    return lines
+
+
 # Have grid spread over screen size
 grid_size = 30
 cols = screen.get_width() // grid_size
@@ -143,6 +159,8 @@ for i in range(cols):
     for j in range(rows):
         new_col.append((0, 0, 0))
     game_board.append(new_col)
+
+score = 0
 
 while not game_over:
     clock.tick(fps)
@@ -166,6 +184,7 @@ while not game_over:
         draw_block()  # Display blocks
         if event.type != pygame.KEYDOWN:
             if not drop_block():
+                score += find_lines()
                 block = Block(random.randint(5, cols - 5), 0)  # Randomize block placement
     pygame.display.update()
 
